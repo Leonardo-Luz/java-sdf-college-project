@@ -14,15 +14,15 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 public class ProfilePage {
 	private WebDriver driver;
 
-	// button
+	// <button className="basic-button" name="logout-button" />
 	private By logoutBy = By.name("logout-button");
-	// button
+	// <button className="basic-button" name="delete-account-button"/>
 	private By deleteAccountBy = By.name("delete-account-button");
 
 	public ProfilePage(WebDriver driver) {
 		this.driver = driver;
 
-		if (!driver.getTitle().equals("Profile"))
+		if (!driver.getCurrentUrl().equals("http://localhost:5173/profile"))
 			throw new IllegalStateException(
 					"Está não é a página Profile, página atual: " + driver.getCurrentUrl());
 	}
@@ -35,10 +35,23 @@ public class ProfilePage {
 	public LoginPage deleteAccount(String password) {
 		this.driver.findElement(deleteAccountBy).click();
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(1000));
-		Alert alert = wait.until(ExpectedConditions.alertIsPresent());
 
-		alert.sendKeys(password);
-		alert.accept();
+		try {
+			Alert prompt = wait.until(ExpectedConditions.alertIsPresent());
+
+			prompt.sendKeys(password);
+			prompt.accept();
+
+			wait.until(ExpectedConditions.alertIsPresent());
+			Alert confirmationAlert = driver.switchTo().alert();
+			String alertText = confirmationAlert.getText();
+			confirmationAlert.accept();
+
+			if (!alertText.equals("User succefully deleted!"))
+				throw new RuntimeException("Error deleting Account: " + alertText);
+		} catch (Exception e) {
+			throw new RuntimeException("Error deleting account: " + e.getMessage());
+		}
 
 		return new LoginPage(driver);
 	}

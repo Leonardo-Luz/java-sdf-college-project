@@ -1,7 +1,12 @@
 package ifrs.edu.com;
 
+import java.time.Duration;
+
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
  * SignInPage
@@ -26,7 +31,7 @@ public class SignInPage {
 	public SignInPage(WebDriver driver) {
 		this.driver = driver;
 
-		if (!driver.getTitle().equals("SignIn"))
+		if (!driver.getCurrentUrl().equals("http://localhost:5173/register"))
 			throw new IllegalStateException(
 					"Está não é a página SignIn, página atual: " + driver.getCurrentUrl());
 	}
@@ -38,6 +43,21 @@ public class SignInPage {
 		this.driver.findElement(passwordInputBy).sendKeys(password);
 
 		this.driver.findElement(SignInBy).click();
+
+		WebDriverWait wait = new WebDriverWait(driver, Duration.ofMillis(1000));
+		Alert created = wait.until(ExpectedConditions.alertIsPresent());
+
+		if (!created.getText().equals("User succefully created!"))
+			throw new RuntimeException("Error on signin");
+
+		created.accept();
+
+		Alert logged = wait.until(ExpectedConditions.alertIsPresent());
+
+		if (!logged.getText().equals("User logged succefully"))
+			throw new RuntimeException("Error on login");
+
+		logged.accept();
 
 		return new HomePage(driver);
 	}
