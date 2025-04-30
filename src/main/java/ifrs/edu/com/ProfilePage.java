@@ -55,4 +55,8 @@ public class ProfilePage {
 
 		return new LoginPage(driver);
 	}
+
+	public WebDriver getDriver() {
+		return driver;
+	}
 }

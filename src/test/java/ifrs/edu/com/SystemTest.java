@@ -14,8 +14,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
 
 /**
  * SystemTest
@@ -28,13 +26,6 @@ public class SystemTest {
 
 	@BeforeAll
 	public static void setup() {
-		// FIX:
-		//
-		// System.setProperty("webdriver.gecko.driver", "/snap/bin/geckodriver");
-		//
-		// FirefoxOptions options = new FirefoxOptions();
-		// options.setBinary("/usr/bin/firefox");
-		// SystemTest.driver = new FirefoxDriver(options);
 		SystemTest.driver = new ChromeDriver();
 
 		driver.get("http://localhost:5173");
@@ -54,7 +45,8 @@ public class SystemTest {
 		LoginPage loginPage = new LoginPage(SystemTest.driver);
 		SignInPage signInPage = loginPage.toSignInPage();
 
-		signInPage.signInValidUser("SystemTest is a test USER", "99", SystemTest.username, SystemTest.password);
+		HomePage homePage = signInPage.signInValidUser("SystemTest is a test USER", "99", SystemTest.username, SystemTest.password);
+		assertTrue(homePage.getDriver().getPageSource().contains("global chat"));
 	}
 
 	@Test
@@ -63,7 +55,8 @@ public class SystemTest {
 		HomePage homePage = new HomePage(SystemTest.driver);
 		ProfilePage profilePage = homePage.toProfilePage();
 
-		profilePage.logout();
+		LoginPage loginPage = profilePage.logout();
+		assertTrue(loginPage.getDriver().getPageSource().contains("login page"));
 	}
 
 	@Test
@@ -71,7 +64,8 @@ public class SystemTest {
 	public void loginTest() {
 		LoginPage loginPage = new LoginPage(SystemTest.driver);
 
-		loginPage.loginUser(SystemTest.username, SystemTest.password);
+		HomePage homePage = loginPage.loginUser(SystemTest.username, SystemTest.password);
+		assertTrue(homePage.getDriver().getPageSource().contains("global chat"));
 	}
 
 	@Test
@@ -96,7 +90,8 @@ public class SystemTest {
 		HomePage homePage = new HomePage(SystemTest.driver);
 		ProfilePage profilePage = homePage.toProfilePage();
 
-		profilePage.deleteAccount(SystemTest.password);
+		LoginPage loginPage = profilePage.deleteAccount(SystemTest.password);
+		assertTrue(loginPage.getDriver().getPageSource().contains("login page"));
 	}
 
 	@Test

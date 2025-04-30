@@ -66,4 +66,8 @@ public class SignInPage {
 		this.driver.findElement(linkLoginBy).click();
 		return new LoginPage(driver);
 	}
+
+	public WebDriver getDriver() {
+		return driver;
+	}
 }

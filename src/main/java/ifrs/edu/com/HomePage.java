@@ -43,4 +43,8 @@ public class HomePage {
 		this.driver.findElement(linkProfileBy).click();
 		return new ProfilePage(driver);
 	}
+
+	public WebDriver getDriver() {
+		return driver;
+	}
 }
